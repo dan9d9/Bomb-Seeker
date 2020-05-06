@@ -5,7 +5,10 @@ const Button = props => {
 	
 	return (
 		<div data-name='btn' data-idx={props.idx} className='button'>
-			{props.mineNumber}
+			{props.show
+				? props.mineNumber
+				: '?'
+			}
 		</div>
 	);
 }
