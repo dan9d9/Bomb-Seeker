@@ -3,7 +3,7 @@ import './App.css';
 import Button from './components/Button.js';
 
 function App() { 
-  const [ boardWidth, setBoardWidth ] = useState(9);
+  const [ boardWidth, setBoardWidth ] = useState(16);
   const [ buttonArray, setButtonArray ] = useState([]);
   const [ mines, setMines ] = useState(10);
   const [ firstClick, setFirstClick ] = useState(true);
@@ -28,48 +28,54 @@ function App() {
     }
   }, [boardWidth]);
 
-  const getSurrounding = (idx) => {
+  const getSurrounding = (idx, isUserClick) => {
+    // top-left corner
       if(idx === 0) {
         return [1, boardWidth, boardWidth + 1];
-
+    // top-right corner
       }else if(idx === (boardWidth - 1)) {
         return [idx - 1, idx + boardWidth, (idx + boardWidth) - 1];
-
+    // bottom-left corner
       }else if(idx === (totalSquares - boardWidth)) {
         return [idx + 1, idx - boardWidth, (idx - boardWidth) + 1];
-
+    // bottom-right corner
       }else if(idx === (totalSquares - 1)) {
         return [(idx - boardWidth) - 1, idx - boardWidth, idx - 1];
-
+    // in first column    
       }else if(idx % boardWidth === 0) {
-        return [idx - boardWidth, (idx - boardWidth) + 1, idx + 1, idx + boardWidth, (idx + boardWidth) + 1];
-
+        return isUserClick
+          ? [idx - boardWidth, (idx - boardWidth) + 1, idx + 1, idx + boardWidth, (idx + boardWidth) + 1]
+          : [idx - boardWidth, idx + 1, idx + boardWidth];
+    // in last column
       }else if((idx + 1) % boardWidth === 0) {
-        return [(idx - boardWidth) - 1, idx - boardWidth, idx - 1, (idx + boardWidth) - 1, idx + boardWidth];
-
+        return isUserClick
+          ? [(idx - boardWidth) - 1, idx - boardWidth, idx - 1, (idx + boardWidth) - 1, idx + boardWidth]
+          : [idx - boardWidth, idx - 1, idx + boardWidth];
+    // in first row
       }else if((idx > 0 && idx < (boardWidth - 1))) {
-        return [idx - 1, idx + 1, (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1];
-
+        return isUserClick
+          ? [idx - 1, idx + 1, (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
+          : [idx - 1, idx + 1, idx + boardWidth];
+    // in last row
       }else if((idx > (totalSquares - boardWidth) && idx < (totalSquares - 1))) {
-        return [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1, idx - 1, idx + 1];
-
+        return isUserClick
+          ? [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1, idx - 1, idx + 1]
+          : [idx - boardWidth, idx - 1, idx + 1];
+    // not on a border
       }else {
-        return [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1,
+        return isUserClick
+          ? [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1,
                 idx - 1, idx + 1,
-                (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1];
-      }
-  }
-
-
-  const getNeighbors = (idx) => {
-    return [idx - boardWidth, idx - 1, idx + 1, idx + boardWidth];
-  }
+                (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
+          : [idx - boardWidth, idx - 1, idx + 1, idx + boardWidth]; 
+      }   
+    }
 
   const markSurrounding = (array, mineIdx) => {
-    const surrounding = getSurrounding(mineIdx);
+    const surrounding = getSurrounding(mineIdx, true);
 
     surrounding.forEach(square => {
-      if(square >= 0 && square < totalSquares && array[square].mineNumber !== 'M') {
+      if(array[square].mineNumber !== 'M') {
         array[square].mineNumber++;
       }
     });
@@ -81,7 +87,7 @@ function App() {
     let totalMines = mines;
     let tempArray = [...buttonArray];
     let minesArray = [];
-    let startSurrounding = getSurrounding(clickedIdx);
+    let startSurrounding = getSurrounding(clickedIdx, true);
 
     while(totalMines > 0) {
       let newMine = Math.floor(Math.random() * Math.max(totalSquares));
@@ -94,41 +100,41 @@ function App() {
       }
     }
     setButtonArray([...tempArray]);
+    setFirstClick(false);
   }
 
   const clearSquares = (clickedIdx) => {
-    console.log('clicked idx', clickedIdx);
-    let surrounding = getSurrounding(clickedIdx);
+    let surrounding = getSurrounding(clickedIdx, true);
     let tempArray = [...buttonArray];
     let squaresToClear = [];
-    console.log('surrounding array of clicked', surrounding);
 
-// Show starting square
-    tempArray[clickedIdx].mineNumber = '';
+    if(tempArray[clickedIdx].mineNumber === 0) {
+      // Show starting square
+      tempArray[clickedIdx].mineNumber = '';
+
+      // Show squares surrounding starting square
+      surrounding.forEach(squareIdx => {
+        tempArray[squareIdx].show = true
+        // If surrounding squares mineNumber is 0, set mineNumber to empty and push it into the array of
+        // remaining squares to clear      
+        if(tempArray[squareIdx].mineNumber === 0) {
+          tempArray[squareIdx].mineNumber = '';
+          squaresToClear.push(squareIdx);
+        }
+      });
+    }
+
     tempArray[clickedIdx].show = true;
 
-// Show squares surrounding starting square
-    surrounding.forEach(squareIdx => {
-      console.log('square idx', squareIdx);
-      tempArray[squareIdx].show = true
-// If surrounding squares mineNumber is 0, set mineNumber to empty and push it into the array of
-// remaining squares to clear      
-      if(tempArray[squareIdx].mineNumber === 0) {
-        tempArray[squareIdx].mineNumber = '';
-        squaresToClear.push(squareIdx);
-      }
-    });
-
-// Function for pulling squares out of squaresToClear array one at a time and clearing the neighbors of said square.
-// If neighbor mineNumber is 0, push to the end of the array. Function finishes when squaresToClear array is emptied,
-// meaning there are no more connected neighbors with mineNumber === 0,
+    // Function for pulling squares out of squaresToClear array one at a time and clearing the neighbors of said square.
+    // If neighbor mineNumber is 0, push to the end of the array. Function finishes when squaresToClear array is emptied,
+    // meaning there are no more connected neighbors with mineNumber === 0,
     const clearNeighbors = () => {
       let toClear = Number(squaresToClear.splice(0, 1));
-      let newNeighbors = getSurrounding(toClear);
-      console.log('toclear: ', toClear, 'new neighbors: ', newNeighbors);
+      let newNeighbors = getSurrounding(toClear, false);
 
       newNeighbors.forEach(newSquareIdx => {
-        if(newSquareIdx > 0 && newSquareIdx <= totalSquares && !tempArray[newSquareIdx].show && !tempArray[newSquareIdx].isMine) {
+        if(!tempArray[newSquareIdx].show && !tempArray[newSquareIdx].isMine) {
           tempArray[newSquareIdx].show = true;
           if(tempArray[newSquareIdx].mineNumber === 0) {
             tempArray[newSquareIdx].mineNumber = '';
@@ -154,19 +160,29 @@ function App() {
     const clickedIdx = Number(e.target.dataset.idx);
 
     if(firstClick === true) {
-      setFirstClick(false);
       placeMines(clickedIdx);
-      clearSquares(clickedIdx);
     }
-
     if(buttonArray[clickedIdx].isMine) {
       gameOver();
     }
+
+    clearSquares(clickedIdx);
   }
 
+  const handleRightClick = e => {
+    e.preventDefault();
+    if(e.target.dataset.name !== 'btn') {return}
+
+    const clickedIdx = Number(e.target.dataset.idx);
+    let tempArray = [...buttonArray];
+
+    tempArray[clickedIdx].isFlag = !tempArray[clickedIdx].isFlag
+    setButtonArray([...tempArray]);
+  }
+  
 
   return (
-    <div className={`appContainer col-${boardWidth}`} onClick={handleClick}>
+    <div className={`appContainer col-${boardWidth}`} onClick={handleClick} onContextMenu={handleRightClick}>
       {
         buttonArray.map((ele, idx) => {
         return <div className='btnContainer' key={idx}>
