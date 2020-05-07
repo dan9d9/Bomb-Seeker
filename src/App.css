@@ -1,12 +1,13 @@
-.appContainer {
+.app_container {
+  width: max-content;
+  margin: 2em auto;
+  border: solid 4px black;
+  padding: 2em;
+}
+
+.grid_container {
   position: relative;
   display: grid;
-  grid-gap: 0;
-  width: max-content;
-  background-color: black;
-  margin: 2em auto;
-  border: solid 2px black;
-  padding: 2em;
 }
 
 .col-9 {
@@ -32,9 +33,30 @@
 
 .hide_btn {
   background-color: darkgray;
+  color: red;
+  text-align: center;
+}
+
+.hide_btn p {
+  margin-top: 0.2em;
 }
 
 .show_btn {
   background-color: gray;
+  color: blue;
+}
 
+.counter_container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 1em;
+}
+
+.mine_counter, .timer {
+  width: 50px;
+  background-color: black;
+  color: red;
+  text-align: center;
+  padding: 0.5em;
 }

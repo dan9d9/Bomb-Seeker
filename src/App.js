@@ -3,10 +3,12 @@ import './App.css';
 import Button from './components/Button.js';
 
 function App() { 
-  const [ boardWidth, setBoardWidth ] = useState(16);
+  const [ boardWidth, setBoardWidth ] = useState(9);
   const [ buttonArray, setButtonArray ] = useState([]);
   const [ mines, setMines ] = useState(10);
   const [ firstClick, setFirstClick ] = useState(true);
+  const [ numSeconds, setNumSeconds ] = useState(0);
+
 
   const totalSquares = boardWidth * boardWidth;
 
@@ -28,7 +30,7 @@ function App() {
     }
   }, [boardWidth]);
 
-  const getSurrounding = (idx, isUserClick) => {
+  const getSurrounding = (idx) => {
     // top-left corner
       if(idx === 0) {
         return [1, boardWidth, boardWidth + 1];
@@ -43,36 +45,26 @@ function App() {
         return [(idx - boardWidth) - 1, idx - boardWidth, idx - 1];
     // in first column    
       }else if(idx % boardWidth === 0) {
-        return isUserClick
-          ? [idx - boardWidth, (idx - boardWidth) + 1, idx + 1, idx + boardWidth, (idx + boardWidth) + 1]
-          : [idx - boardWidth, idx + 1, idx + boardWidth];
+        return [idx - boardWidth, (idx - boardWidth) + 1, idx + 1, idx + boardWidth, (idx + boardWidth) + 1]
     // in last column
       }else if((idx + 1) % boardWidth === 0) {
-        return isUserClick
-          ? [(idx - boardWidth) - 1, idx - boardWidth, idx - 1, (idx + boardWidth) - 1, idx + boardWidth]
-          : [idx - boardWidth, idx - 1, idx + boardWidth];
+        return [(idx - boardWidth) - 1, idx - boardWidth, idx - 1, (idx + boardWidth) - 1, idx + boardWidth]
     // in first row
       }else if((idx > 0 && idx < (boardWidth - 1))) {
-        return isUserClick
-          ? [idx - 1, idx + 1, (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
-          : [idx - 1, idx + 1, idx + boardWidth];
+        return [idx - 1, idx + 1, (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
     // in last row
       }else if((idx > (totalSquares - boardWidth) && idx < (totalSquares - 1))) {
-        return isUserClick
-          ? [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1, idx - 1, idx + 1]
-          : [idx - boardWidth, idx - 1, idx + 1];
+        return [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1, idx - 1, idx + 1]
     // not on a border
       }else {
-        return isUserClick
-          ? [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1,
+        return [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1,
                 idx - 1, idx + 1,
                 (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
-          : [idx - boardWidth, idx - 1, idx + 1, idx + boardWidth]; 
       }   
     }
 
   const markSurrounding = (array, mineIdx) => {
-    const surrounding = getSurrounding(mineIdx, true);
+    const surrounding = getSurrounding(mineIdx);
 
     surrounding.forEach(square => {
       if(array[square].mineNumber !== 'M') {
@@ -87,7 +79,7 @@ function App() {
     let totalMines = mines;
     let tempArray = [...buttonArray];
     let minesArray = [];
-    let startSurrounding = getSurrounding(clickedIdx, true);
+    let startSurrounding = getSurrounding(clickedIdx);
 
     while(totalMines > 0) {
       let newMine = Math.floor(Math.random() * Math.max(totalSquares));
@@ -104,15 +96,16 @@ function App() {
   }
 
   const clearSquares = (clickedIdx) => {
-    let surrounding = getSurrounding(clickedIdx, true);
+    let surrounding = getSurrounding(clickedIdx);
     let tempArray = [...buttonArray];
     let squaresToClear = [];
 
+  // If clicked square does not have a mine in surrounding squares, begin process of clearing neighboring squares
     if(tempArray[clickedIdx].mineNumber === 0) {
-      // Show starting square
+
       tempArray[clickedIdx].mineNumber = '';
 
-      // Show squares surrounding starting square
+      // Show squares surrounding clicked square
       surrounding.forEach(squareIdx => {
         tempArray[squareIdx].show = true
         // If surrounding squares mineNumber is 0, set mineNumber to empty and push it into the array of
@@ -123,7 +116,7 @@ function App() {
         }
       });
     }
-
+  // Otherwise, if mine is present in surrounding squares, only show clicked square
     tempArray[clickedIdx].show = true;
 
     // Function for pulling squares out of squaresToClear array one at a time and clearing the neighbors of said square.
@@ -131,7 +124,7 @@ function App() {
     // meaning there are no more connected neighbors with mineNumber === 0,
     const clearNeighbors = () => {
       let toClear = Number(squaresToClear.splice(0, 1));
-      let newNeighbors = getSurrounding(toClear, false);
+      let newNeighbors = getSurrounding(toClear);
 
       newNeighbors.forEach(newSquareIdx => {
         if(!tempArray[newSquareIdx].show && !tempArray[newSquareIdx].isMine) {
@@ -144,6 +137,7 @@ function App() {
       }); 
     }
 
+    // Initiate clearNeighbors function
     while(squaresToClear.length > 0) {
       clearNeighbors();
     }
@@ -155,14 +149,23 @@ function App() {
     alert('Game over man!');
   }
 
+  let secondsTimer;
+
+
   const handleClick = e => {
-    if(e.target.dataset.name !== 'btn') {return}
+    if(!e.target.dataset.clickable) {return}
     const clickedIdx = Number(e.target.dataset.idx);
+    const tempArray = [...buttonArray];
 
     if(firstClick === true) {
       placeMines(clickedIdx);
+      secondsTimer = setInterval(() => {
+        setNumSeconds(numSeconds => numSeconds + 1);
+      }, 1000);
     }
     if(buttonArray[clickedIdx].isMine) {
+      tempArray[clickedIdx].show = true;
+      setButtonArray([...tempArray]);
       gameOver();
     }
 
@@ -171,25 +174,57 @@ function App() {
 
   const handleRightClick = e => {
     e.preventDefault();
-    if(e.target.dataset.name !== 'btn') {return}
+    if(!e.target.dataset.clickable) {return}
 
     const clickedIdx = Number(e.target.dataset.idx);
     let tempArray = [...buttonArray];
+    let tempMines = mines;
 
-    tempArray[clickedIdx].isFlag = !tempArray[clickedIdx].isFlag
+    if(!tempArray[clickedIdx].isFlag) {
+      if(tempMines > 0) {
+        tempArray[clickedIdx].isFlag = true;
+        tempMines--;    
+      }
+    }else {
+      tempArray[clickedIdx].isFlag = false;
+      tempMines++;  
+    }
+
+    setMines(tempMines);
     setButtonArray([...tempArray]);
   }
+
+  // window.setInterval((function(){
+  //  var start = Date.now();
+  //  var textNode = document.createTextNode('0');
+  //  document.getElementById('seconds').appendChild(textNode);
+  //  return function() {
+  //       textNode.data = Math.floor((Date.now()-start)/1000);
+  //       };
+  //  }()), 1000);
+
+  useEffect(() => {
+    return () => {
+      clearInterval(secondsTimer);
+    }
+  }, []);
   
 
   return (
-    <div className={`appContainer col-${boardWidth}`} onClick={handleClick} onContextMenu={handleRightClick}>
-      {
-        buttonArray.map((ele, idx) => {
-        return <div className='btnContainer' key={idx}>
-                <Button idx={ele.idx} isMine={ele.isMine} isFlag={ele.isFlag} mineNumber={ele.mineNumber} show={ele.show} />
-               </div>
-        })
-      }
+    <div className='app_container'>
+      <div className={`grid_container col-${boardWidth}`} onClick={handleClick} onContextMenu={handleRightClick}>
+        {
+          buttonArray.map((ele, idx) => {
+          return <div className='btnContainer' key={idx}>
+                  <Button idx={ele.idx} isMine={ele.isMine} isFlag={ele.isFlag} mineNumber={ele.mineNumber} show={ele.show} />
+                 </div>
+          })
+        }
+      </div>
+      <div className='counter_container'>
+        <div className='mine_counter'>{mines}</div>
+        <div className='timer'>{numSeconds}</div>
+      </div>
     </div>
   );
 }
