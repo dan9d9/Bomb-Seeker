@@ -1,4 +1,4 @@
-Work in progress 
+Work in progress - https://bomb-mopper.netlify.app/ 
 * only beginner difficulty available at the moment
 * if you press cancel at the windows confirm you will have to refresh to play again
 
