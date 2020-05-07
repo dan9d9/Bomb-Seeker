@@ -3,32 +3,76 @@ import './App.css';
 import Button from './components/Button.js';
 
 function App() { 
-  const [ boardWidth, setBoardWidth ] = useState(9);
+  const [ gameDifficulty, setGameDifficulty ] = useState('Beginner');
+  const [ boardWidth, setBoardWidth ] = useState();
+  const [ totalSquares, setTotalSquares ] = useState();
   const [ buttonArray, setButtonArray ] = useState([]);
-  const [ mines, setMines ] = useState(10);
+  const [ startingMines, setStartingMines ] = useState();
+  const [ mines, setMines ] = useState();
+  const [ renderGrid, setRenderGrid ] = useState();
   const [ firstClick, setFirstClick ] = useState(true);
   const [ numSeconds, setNumSeconds ] = useState(0);
+  const [ intervalID, setIntervalID ] = useState('');
+  const [ uncoveredSquares, setUncoveredSquares ] = useState(0);
+  const [ isDisabled, setIsDisabled ] = useState(false);
 
+  function setBeginnerBoard() {
+    setBoardWidth(9);
+    setTotalSquares(9 * 9);
+    setStartingMines(10);
+    setMines(10);
+    setRenderGrid(true);
+  }
 
-  const totalSquares = boardWidth * boardWidth;
+  function setIntermediateBoard() {
+    setBoardWidth(16);
+    setTotalSquares(16 * 16);
+    setStartingMines(40);
+    setMines(40);
+    setRenderGrid(true);
+  }
+
+  function setExpertBoard() {
+    setBoardWidth(30);
+    setTotalSquares(30 * 16);
+    setStartingMines(99);
+    setMines(99);
+    setRenderGrid(true);
+  }
 
   useEffect(() => {
-    let tempArray = [];
-    for(let i=0;i<totalSquares;i++) {
-      tempArray.push({
-        idx: i,
-        isMine: false,
-        isFlag: false,
-        show: false,
-        mineNumber: 0
-      });
-    }
-    setButtonArray([...tempArray]);
+    setBeginnerBoard();
+  }, []);
 
-    if(boardWidth === 16) {
-      setMines(40);
+  useEffect(() => {
+    if(renderGrid) {
+
+      let tempArray = [];
+      for(let i=0;i<totalSquares;i++) {
+        tempArray.push({
+          idx: i,
+          isMine: false,
+          isFlag: false,
+          show: false,
+          mineNumber: 0
+        });
+      }
+      setRenderGrid(false);
+      setButtonArray([...tempArray]);
     }
-  }, [boardWidth]);
+    
+  }, [renderGrid, totalSquares]);
+
+  useEffect(() => {
+    let tempSquares = buttonArray.filter(btn => btn.show === true);
+    setUncoveredSquares(tempSquares.length);
+  }, [mines, buttonArray]);
+
+  useEffect(() => {
+    return totalSquares - uncoveredSquares === startingMines
+      ? youWin()
+      : undefined
+  }, [uncoveredSquares]);
 
   const getSurrounding = (idx) => {
     // top-left corner
@@ -145,28 +189,22 @@ function App() {
     setButtonArray([...tempArray]);
   }
 
-  const gameOver = () => {
-    alert('Game over man!');
-  }
-
-  let secondsTimer;
-
-
   const handleClick = e => {
-    if(!e.target.dataset.clickable) {return}
+    if(!e.target.dataset.clickable || isDisabled) {return}
     const clickedIdx = Number(e.target.dataset.idx);
     const tempArray = [...buttonArray];
 
     if(firstClick === true) {
       placeMines(clickedIdx);
-      secondsTimer = setInterval(() => {
+      let secondsTimer = setInterval(() => {
         setNumSeconds(numSeconds => numSeconds + 1);
       }, 1000);
+      setIntervalID(secondsTimer);
     }
     if(buttonArray[clickedIdx].isMine) {
       tempArray[clickedIdx].show = true;
       setButtonArray([...tempArray]);
-      gameOver();
+      youLose();
     }
 
     clearSquares(clickedIdx);
@@ -174,7 +212,7 @@ function App() {
 
   const handleRightClick = e => {
     e.preventDefault();
-    if(!e.target.dataset.clickable) {return}
+    if(!e.target.dataset.clickable || isDisabled) {return}
 
     const clickedIdx = Number(e.target.dataset.idx);
     let tempArray = [...buttonArray];
@@ -194,25 +232,48 @@ function App() {
     setButtonArray([...tempArray]);
   }
 
-  // window.setInterval((function(){
-  //  var start = Date.now();
-  //  var textNode = document.createTextNode('0');
-  //  document.getElementById('seconds').appendChild(textNode);
-  //  return function() {
-  //       textNode.data = Math.floor((Date.now()-start)/1000);
-  //       };
-  //  }()), 1000);
+  function youLose () {
+    clearInterval(intervalID);
+    if(window.confirm('In BombMopper, bombs mop YOU!')) {
+      setFirstClick(true);
+      setNumSeconds(0);
+      setUncoveredSquares(0);
+      gameDifficulty === 'Beginner'
+        ? setBeginnerBoard()
+        : gameDifficulty === 'Intermediate'
+          ? setIntermediateBoard()
+          : setExpertBoard();
+    }else {
+      setIsDisabled(true);
+    }
+  }
+
+  function youWin() {
+    clearInterval(intervalID);
+    if(window.confirm(`You mopped all the bombs in ${numSeconds} seconds!`)) {
+      setFirstClick(true);
+      setNumSeconds(0);
+      setUncoveredSquares(0);
+      gameDifficulty === 'Beginner'
+        ? setBeginnerBoard()
+        : gameDifficulty === 'Intermediate'
+          ? setIntermediateBoard()
+          : setExpertBoard();
+    }else {
+      setIsDisabled(true);
+    }
+  }
 
   useEffect(() => {
     return () => {
-      clearInterval(secondsTimer);
+      clearInterval(intervalID);
     }
   }, []);
   
 
   return (
     <div className='app_container'>
-      <div className={`grid_container col-${boardWidth}`} onClick={handleClick} onContextMenu={handleRightClick}>
+      <div className={`grid_container col-${gameDifficulty}`} onClick={handleClick} onContextMenu={handleRightClick}>
         {
           buttonArray.map((ele, idx) => {
           return <div className='btnContainer' key={idx}>

@@ -10,14 +10,19 @@
   display: grid;
 }
 
-.col-9 {
-  grid-template-columns: repeat(9, 1fr);
-  grid-template-rows: repeat(9, 30px);
+.col-Beginner {
+  grid-template-columns: repeat(9, 25px);
+  grid-template-rows: repeat(9, 25px);
 }
 
-.col-16 {
-  grid-template-columns: repeat(16, 1fr);
-  grid-template-rows: repeat(16, 30px);
+.col-Intermediate {
+  grid-template-columns: repeat(16, 25px);
+  grid-template-rows: repeat(16, 25px);
+}
+
+.col-Expert {
+  grid-template-columns: repeat(30, 25px);
+  grid-template-rows: repeat(16, 25px);
 }
 
 .btnContainer {
@@ -31,14 +36,14 @@
   border: 1px solid black;
 }
 
-.hide_btn {
-  background-color: darkgray;
-  color: red;
-  text-align: center;
+.button p {
+  margin-top: 0.05em;
+  margin-right: 0.3em;
 }
 
-.hide_btn p {
-  margin-top: 0.2em;
+.hide_btn {
+  background-color: darkgray;
+  color: black;
 }
 
 .show_btn {
