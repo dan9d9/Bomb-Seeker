@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Button from './components/Button.js';
+import Button from './components/Button';
+import EndGameModule from './components/EndGameModule';
+import HelpMenu from './components/HelpMenu';
 
 function App() { 
   const [ gameDifficulty, setGameDifficulty ] = useState('Beginner');
@@ -9,19 +11,18 @@ function App() {
   const [ buttonArray, setButtonArray ] = useState([]);
   const [ startingMines, setStartingMines ] = useState();
   const [ mines, setMines ] = useState();
-  const [ renderGrid, setRenderGrid ] = useState();
   const [ firstClick, setFirstClick ] = useState(true);
   const [ numSeconds, setNumSeconds ] = useState(0);
   const [ intervalID, setIntervalID ] = useState('');
+  const [ timeoutID, setTimeoutID ] = useState('');
   const [ uncoveredSquares, setUncoveredSquares ] = useState(0);
   const [ isDisabled, setIsDisabled ] = useState(false);
   const [ newGame, setNewGame ] = useState(true);
+  const [ gameOver, setGameOver ] = useState('');
+  const [ showMenu, setShowMenu ] = useState(false);
+  const [ showHelp, setShowHelp ] = useState(false);
 
   function setBeginnerBoard() {
-    clearInterval(intervalID);
-    setUncoveredSquares(0);
-    setFirstClick(true);
-    setNumSeconds(0);
     setBoardWidth(9);
     setTotalSquares(9 * 9);
     setStartingMines(10);
@@ -29,10 +30,6 @@ function App() {
   }
 
   function setIntermediateBoard() {
-    clearInterval(intervalID);
-    setUncoveredSquares(0);
-    setFirstClick(true);
-    setNumSeconds(0);
     setBoardWidth(16);
     setTotalSquares(16 * 16);
     setStartingMines(40);
@@ -40,26 +37,26 @@ function App() {
   }
 
   function setExpertBoard() {
-    clearInterval(intervalID);
-    setUncoveredSquares(0);
-    setFirstClick(true);
-    setNumSeconds(0);
     setBoardWidth(30);
     setTotalSquares(30 * 16);
     setStartingMines(99);
     setMines(99);
   }
 
-// Set board on newGame === true. On app load beginner board is set.
+// Set board on newGame === true. On app load, beginner board is set.
   useEffect(() => {
     if(newGame) {
+      setGameOver('');
+      setUncoveredSquares(0);
+      setFirstClick(true);
+      setNumSeconds(0);
       gameDifficulty === 'Beginner'
       ? setBeginnerBoard()
       : gameDifficulty === 'Intermediate'
         ? setIntermediateBoard()
         : setExpertBoard();
     }  
-  }, [newGame]);
+  }, [newGame, gameDifficulty]);
 
 // Set all squares with initial properties and end newGame preparation
   useEffect(() => {
@@ -91,9 +88,9 @@ function App() {
 // Listen for win condition
   useEffect(() => {
     return totalSquares - uncoveredSquares === startingMines
-      ? youWin()
+      ? endGame('win')
       : undefined
-  }, [uncoveredSquares]);
+  }, [uncoveredSquares, startingMines, totalSquares]);
 
 
 // Get all surrounding squares from clicked square
@@ -217,7 +214,7 @@ function App() {
   }
 
 
-// Handle square click
+// Handle square click. 
   const handleClick = e => {
     if(!e.target.dataset.clickable || isDisabled) {return}
     const clickedIdx = Number(e.target.dataset.idx);
@@ -225,15 +222,18 @@ function App() {
 
     if(firstClick === true) {
       placeMines(clickedIdx);
-      let secondsTimer = setInterval(() => {
+      const secondsTimer = setInterval(() => {
         setNumSeconds(numSeconds => numSeconds + 1);
       }, 1000);
       setIntervalID(secondsTimer);
     }
     if(buttonArray[clickedIdx].isMine) {
-      tempArray[clickedIdx].show = true;
+      tempArray.forEach(btn => {
+        if(btn.isMine) {btn.show = true}
+      })
+
       setButtonArray([...tempArray]);
-      youLose();
+      endGame('lose');
     }
 
     clearSquares(clickedIdx);
@@ -266,7 +266,8 @@ function App() {
 
 // Handle new game controls
   const controlNewGame = e => {
-    console.log('new game: ', gameDifficulty, newGame);
+    setShowMenu(showMenu => !showMenu);
+
     if(e.target.textContent === 'Beginner') {
       setTotalSquares(0);
       setGameDifficulty('Beginner');   
@@ -282,51 +283,64 @@ function App() {
     }
   }
 
-
-// Lose function
-  function youLose () {
-    clearInterval(intervalID);
-    if(window.confirm('In BombMopper, bombs mop YOU!\nPlay again?')) {
-      setTotalSquares(0);
-      setNewGame(true);
-    }else {
-      setIsDisabled(true);
-    }
+  const handleHelpMenu = e => {
+    setShowHelp(showHelp => !showHelp);
   }
 
 
-// Win function
-  function youWin() {
-    clearInterval(intervalID);
-    if(window.confirm(`You mopped all the bombs in ${numSeconds} seconds!\nPlay again?`)) {
-      setTotalSquares(0);
-      setNewGame(true);
-    }else {
-      setIsDisabled(true);
-    }
+// Disable squares if gameOver, otherwise disable squares if menu is showing
+  useEffect(() => {
+    gameOver
+      ? setIsDisabled(true)
+      : showMenu || showHelp
+        ? setIsDisabled(true)
+        : setIsDisabled(false);
+       
+  }, [showMenu, gameOver]);
+
+
+// End Game
+  function endGame (result) {
+    setIntervalID('');
+    const timerID = setTimeout(() => {
+      setGameOver(result);
+    }, 1000); 
+    setTimeoutID(timerID);
   }
 
+// Clear Timeout/Interval on unmount
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutID);
+    }
+  }, [timeoutID]);
 
-// Clear interval on unmount
   useEffect(() => {
     return () => {
       clearInterval(intervalID);
     }
-  }, []);
+  }, [intervalID]);
   
 
   return (
     <div className='app_container'>
       <header className='controls'>
-        <details>
-          <summary>New Game</summary>
-          <ul onClick={controlNewGame}>
-            <li>Beginner</li>
-            <li>Intermediate</li>
-            <li>Expert</li>
-          </ul>
-        </details>
-        <p>How To Play</p>
+        <div className='details' onClick={controlNewGame}>
+          <p>New Game</p>
+          {showMenu
+            ? <ul>
+                <li>Beginner</li>
+                <li>Intermediate</li>
+                <li>Expert</li>
+              </ul>
+            : null
+          }
+        </div>
+        <p onClick={handleHelpMenu}>How To Play</p>
+        {showHelp
+          ? <HelpMenu handleHelpMenu={handleHelpMenu}/>
+          : null
+        }
       </header>
       <div className={`grid_container col-${gameDifficulty}`} onClick={handleClick} onContextMenu={handleRightClick}>
         {
@@ -341,6 +355,11 @@ function App() {
         <div className='mine_counter'>{mines}</div>
         <div className='timer'>{numSeconds}</div>
       </div>
+      {gameOver
+          ? <EndGameModule result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
+              setNewGame={setNewGame} setIsDisabled={setIsDisabled} />
+          : null
+      }
     </div>
   );
 }

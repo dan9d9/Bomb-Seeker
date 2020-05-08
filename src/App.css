@@ -4,31 +4,25 @@
 }
 
 .app_container {
+  position: relative;
   cursor: default;
   width: max-content;
   margin: 2em auto;
   border: solid 4px black;
-  padding: var(--counter-padding) 2em;
-  /*padding-bottom: var(--counter-padding);*/
+  background-color: lightgray;
 }
 
 .controls {
+  height: 4em;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-bottom: var(--counter-padding);
+  background-color: darkgray;
+  margin-bottom: 1em;
 }
 
-details {
+.details {
   position: relative;
-}
-
-summary {
-  list-style: none
-}
-
-summary::-webkit-details-marker {
-  display: none;
 }
 
 ul {
@@ -52,9 +46,56 @@ ul li:hover {
   color: green;
 }
 
+.help_container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: goldenrod;
+}
+
+.help_menu {
+  position: relative;
+  padding: 0.5em;
+}
+
+.close_help {
+  position: absolute;
+  top: 0.5em;
+  right: 1em;
+  z-index: 2;
+  padding: 0.2em 0.3em;
+  border: 1px solid black;
+  box-shadow: 1px 1px 1px 0px black;
+  border-radius: 15px;
+}
+
+.close_help span {
+  width: 100%;
+  height: 100%;
+  color: black;
+  font-size: 1rem;
+}
+
+.close_help:hover span {
+  color: red;
+}
+
+.help_menu h1, .help_menu h2 {
+  font-size: 1rem;
+}
+
+.help_menu p {
+  font-size: 0.9rem;
+  margin-bottom: 0.5em;
+}
+
 .grid_container {
   position: relative;
   display: grid;
+  margin: 0 2em;
 }
 
 .col-Beginner {
@@ -104,7 +145,7 @@ ul li:hover {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-top: var(--counter-padding);
+  margin: var(--counter-padding) 0;
 }
 
 .mine_counter, .timer {
@@ -115,4 +156,42 @@ ul li:hover {
   color: red;
   text-align: center;
   padding: 0.5em;
+}
+
+.module_container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.end_game_module {
+  position: absolute;
+  width: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  background-color: black;
+  color: white;
+  text-align: center;
+}
+
+.end_game_module p {
+  padding: 0.3em 0;
+}
+
+.end_game_module div:last-child {
+  display: flex;
+  justify-content: center;
+}
+
+.end_game_module button:first-child {
+  margin-right: 5em;
+}
+
+.end_game_module button {
+  padding: 0.2em 0.5em;
+  margin: 0.7em 0;
 }
