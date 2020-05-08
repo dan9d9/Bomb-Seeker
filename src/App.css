@@ -1,8 +1,55 @@
+:root {
+  --square-size: 25px;
+  --counter-padding: 1em;
+}
+
 .app_container {
+  cursor: default;
   width: max-content;
   margin: 2em auto;
   border: solid 4px black;
-  padding: 2em;
+  padding: var(--counter-padding) 2em;
+  /*padding-bottom: var(--counter-padding);*/
+}
+
+.controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: var(--counter-padding);
+}
+
+details {
+  position: relative;
+}
+
+summary {
+  list-style: none
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+ul {
+  margin-top: 0.3em;
+  list-style-type: none;
+  position: absolute;
+  background-color: white;
+  padding: 0.5em 1.5em;
+  border: solid 1px black;
+  border-top: none;
+  box-shadow: 2px 2px 3px 0px black;
+  z-index: 1;
+}
+
+ul li:not(:last-child) {
+  margin-bottom: 0.5em;
+}
+
+ul li:hover {
+  text-decoration: underline;
+  color: green;
 }
 
 .grid_container {
@@ -11,22 +58,22 @@
 }
 
 .col-Beginner {
-  grid-template-columns: repeat(9, 25px);
-  grid-template-rows: repeat(9, 25px);
+  grid-template-columns: repeat(9, var(--square-size));
+  grid-template-rows: repeat(9, var(--square-size));
 }
 
 .col-Intermediate {
-  grid-template-columns: repeat(16, 25px);
-  grid-template-rows: repeat(16, 25px);
+  grid-template-columns: repeat(16, var(--square-size));
+  grid-template-rows: repeat(16, var(--square-size));
 }
 
 .col-Expert {
-  grid-template-columns: repeat(30, 25px);
-  grid-template-rows: repeat(16, 25px);
+  grid-template-columns: repeat(30, var(--square-size));
+  grid-template-rows: repeat(16, var(--square-size));
 }
 
 .btnContainer {
-  width: 30px;
+  width: var(--square-size);
 }
 
 .button {
@@ -37,11 +84,13 @@
 }
 
 .button p {
+  width: 100%;
   margin-top: 0.05em;
   margin-right: 0.3em;
 }
 
 .hide_btn {
+  width: 100%;
   background-color: darkgray;
   color: black;
 }
@@ -55,10 +104,12 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-top: 1em;
+  margin-top: var(--counter-padding);
 }
 
 .mine_counter, .timer {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.2rem;
   width: 50px;
   background-color: black;
   color: red;

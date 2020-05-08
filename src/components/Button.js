@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../App.css';
 
 const Button = props => {
@@ -8,7 +9,7 @@ const Button = props => {
 			{props.show
 				? <p>{props.mineNumber}</p>
 				: props.isFlag
-					? <p data-clickable={true} data-idx={props.idx}>?</p>
+					? <p data-clickable={true} data-idx={props.idx}>!</p>
 					: null
 			}
 		</div>
@@ -16,3 +17,13 @@ const Button = props => {
 }
 
 export default Button;
+
+Button.propTypes = {
+  idx: PropTypes.number.isRequired,
+  mineNumber: PropTypes.oneOfType([
+  	PropTypes.string,
+  	PropTypes.number
+  ]).isRequired,
+  show: PropTypes.bool.isRequired,
+  isFlag: PropTypes.bool.isRequired
+}

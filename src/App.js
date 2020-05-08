@@ -15,38 +15,55 @@ function App() {
   const [ intervalID, setIntervalID ] = useState('');
   const [ uncoveredSquares, setUncoveredSquares ] = useState(0);
   const [ isDisabled, setIsDisabled ] = useState(false);
+  const [ newGame, setNewGame ] = useState(true);
 
   function setBeginnerBoard() {
+    clearInterval(intervalID);
+    setUncoveredSquares(0);
+    setFirstClick(true);
+    setNumSeconds(0);
     setBoardWidth(9);
     setTotalSquares(9 * 9);
     setStartingMines(10);
     setMines(10);
-    setRenderGrid(true);
   }
 
   function setIntermediateBoard() {
+    clearInterval(intervalID);
+    setUncoveredSquares(0);
+    setFirstClick(true);
+    setNumSeconds(0);
     setBoardWidth(16);
     setTotalSquares(16 * 16);
     setStartingMines(40);
     setMines(40);
-    setRenderGrid(true);
   }
 
   function setExpertBoard() {
+    clearInterval(intervalID);
+    setUncoveredSquares(0);
+    setFirstClick(true);
+    setNumSeconds(0);
     setBoardWidth(30);
     setTotalSquares(30 * 16);
     setStartingMines(99);
     setMines(99);
-    setRenderGrid(true);
   }
 
+// Set board on newGame === true. On app load beginner board is set.
   useEffect(() => {
-    setBeginnerBoard();
-  }, []);
+    if(newGame) {
+      gameDifficulty === 'Beginner'
+      ? setBeginnerBoard()
+      : gameDifficulty === 'Intermediate'
+        ? setIntermediateBoard()
+        : setExpertBoard();
+    }  
+  }, [newGame]);
 
+// Set all squares with initial properties and end newGame preparation
   useEffect(() => {
-    if(renderGrid) {
-
+    if(newGame && totalSquares) {
       let tempArray = [];
       for(let i=0;i<totalSquares;i++) {
         tempArray.push({
@@ -57,23 +74,29 @@ function App() {
           mineNumber: 0
         });
       }
-      setRenderGrid(false);
       setButtonArray([...tempArray]);
+      setNewGame(false);
     }
     
-  }, [renderGrid, totalSquares]);
+  }, [newGame, totalSquares]);
 
+
+// Update uncoveredSquares when squares are clicked
   useEffect(() => {
     let tempSquares = buttonArray.filter(btn => btn.show === true);
-    setUncoveredSquares(tempSquares.length);
-  }, [mines, buttonArray]);
+    setUncoveredSquares(tempSquares.length); 
+  }, [buttonArray]);
 
+
+// Listen for win condition
   useEffect(() => {
     return totalSquares - uncoveredSquares === startingMines
       ? youWin()
       : undefined
   }, [uncoveredSquares]);
 
+
+// Get all surrounding squares from clicked square
   const getSurrounding = (idx) => {
     // top-left corner
       if(idx === 0) {
@@ -107,6 +130,7 @@ function App() {
       }   
     }
 
+// Set mineNumber of squares surrounding placed mine
   const markSurrounding = (array, mineIdx) => {
     const surrounding = getSurrounding(mineIdx);
 
@@ -119,6 +143,7 @@ function App() {
     return array;
   }
  
+// Randomly set mines on initial click
   const placeMines = (clickedIdx) => {
     let totalMines = mines;
     let tempArray = [...buttonArray];
@@ -139,6 +164,8 @@ function App() {
     setFirstClick(false);
   }
 
+
+// Clear squares around initial click, and then around neighboring squares that have a mineNumber of 0.
   const clearSquares = (clickedIdx) => {
     let surrounding = getSurrounding(clickedIdx);
     let tempArray = [...buttonArray];
@@ -189,6 +216,8 @@ function App() {
     setButtonArray([...tempArray]);
   }
 
+
+// Handle square click
   const handleClick = e => {
     if(!e.target.dataset.clickable || isDisabled) {return}
     const clickedIdx = Number(e.target.dataset.idx);
@@ -210,6 +239,8 @@ function App() {
     clearSquares(clickedIdx);
   }
 
+
+// Handle right click
   const handleRightClick = e => {
     e.preventDefault();
     if(!e.target.dataset.clickable || isDisabled) {return}
@@ -232,38 +263,51 @@ function App() {
     setButtonArray([...tempArray]);
   }
 
+
+// Handle new game controls
+  const controlNewGame = e => {
+    console.log('new game: ', gameDifficulty, newGame);
+    if(e.target.textContent === 'Beginner') {
+      setTotalSquares(0);
+      setGameDifficulty('Beginner');   
+      setNewGame(true);
+    }else if(e.target.textContent === 'Intermediate') {
+      setTotalSquares(0);
+      setGameDifficulty('Intermediate');
+      setNewGame(true);
+    }else if(e.target.textContent === 'Expert') {
+      setTotalSquares(0);
+      setGameDifficulty('Expert');
+      setNewGame(true);
+    }
+  }
+
+
+// Lose function
   function youLose () {
     clearInterval(intervalID);
-    if(window.confirm('In BombMopper, bombs mop YOU!')) {
-      setFirstClick(true);
-      setNumSeconds(0);
-      setUncoveredSquares(0);
-      gameDifficulty === 'Beginner'
-        ? setBeginnerBoard()
-        : gameDifficulty === 'Intermediate'
-          ? setIntermediateBoard()
-          : setExpertBoard();
+    if(window.confirm('In BombMopper, bombs mop YOU!\nPlay again?')) {
+      setTotalSquares(0);
+      setNewGame(true);
     }else {
       setIsDisabled(true);
     }
   }
 
+
+// Win function
   function youWin() {
     clearInterval(intervalID);
-    if(window.confirm(`You mopped all the bombs in ${numSeconds} seconds!`)) {
-      setFirstClick(true);
-      setNumSeconds(0);
-      setUncoveredSquares(0);
-      gameDifficulty === 'Beginner'
-        ? setBeginnerBoard()
-        : gameDifficulty === 'Intermediate'
-          ? setIntermediateBoard()
-          : setExpertBoard();
+    if(window.confirm(`You mopped all the bombs in ${numSeconds} seconds!\nPlay again?`)) {
+      setTotalSquares(0);
+      setNewGame(true);
     }else {
       setIsDisabled(true);
     }
   }
 
+
+// Clear interval on unmount
   useEffect(() => {
     return () => {
       clearInterval(intervalID);
@@ -273,6 +317,17 @@ function App() {
 
   return (
     <div className='app_container'>
+      <header className='controls'>
+        <details>
+          <summary>New Game</summary>
+          <ul onClick={controlNewGame}>
+            <li>Beginner</li>
+            <li>Intermediate</li>
+            <li>Expert</li>
+          </ul>
+        </details>
+        <p>How To Play</p>
+      </header>
       <div className={`grid_container col-${gameDifficulty}`} onClick={handleClick} onContextMenu={handleRightClick}>
         {
           buttonArray.map((ele, idx) => {
