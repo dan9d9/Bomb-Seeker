@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import '../App.css';
 
@@ -30,3 +30,7 @@ const HelpMenu = props => {
 }
 
 export default HelpMenu;
+
+HelpMenu.propTypes = {
+	handleHelpMenu: PropTypes.func.isRequired,
+}

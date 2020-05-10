@@ -46,6 +46,8 @@ function App() {
 // Set board on newGame === true. On app load, beginner board is set.
   useEffect(() => {
     if(newGame) {
+      setTimeoutID('');
+      setIntervalID('');
       setGameOver('');
       setUncoveredSquares(0);
       setFirstClick(true);
@@ -296,7 +298,7 @@ function App() {
         ? setIsDisabled(true)
         : setIsDisabled(false);
        
-  }, [showMenu, gameOver]);
+  }, [showMenu, showHelp, gameOver]);
 
 
 // End Game
