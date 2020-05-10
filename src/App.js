@@ -3,6 +3,7 @@ import './App.css';
 import Button from './components/Button';
 import EndGameModule from './components/EndGameModule';
 import HelpMenu from './components/HelpMenu';
+import { placeMines, clearSquares } from './squaresLogic';
 
 function App() { 
   const [ gameDifficulty, setGameDifficulty ] = useState('Beginner');
@@ -43,6 +44,7 @@ function App() {
     setMines(99);
   }
 
+
 // Set board on newGame === true. On app load, beginner board is set.
   useEffect(() => {
     if(newGame) {
@@ -59,6 +61,7 @@ function App() {
         : setExpertBoard();
     }  
   }, [newGame, gameDifficulty]);
+
 
 // Set all squares with initial properties and end newGame preparation
   useEffect(() => {
@@ -95,150 +98,36 @@ function App() {
   }, [uncoveredSquares, startingMines, totalSquares]);
 
 
-// Get all surrounding squares from clicked square
-  const getSurrounding = (idx) => {
-    // top-left corner
-      if(idx === 0) {
-        return [1, boardWidth, boardWidth + 1];
-    // top-right corner
-      }else if(idx === (boardWidth - 1)) {
-        return [idx - 1, idx + boardWidth, (idx + boardWidth) - 1];
-    // bottom-left corner
-      }else if(idx === (totalSquares - boardWidth)) {
-        return [idx + 1, idx - boardWidth, (idx - boardWidth) + 1];
-    // bottom-right corner
-      }else if(idx === (totalSquares - 1)) {
-        return [(idx - boardWidth) - 1, idx - boardWidth, idx - 1];
-    // in first column    
-      }else if(idx % boardWidth === 0) {
-        return [idx - boardWidth, (idx - boardWidth) + 1, idx + 1, idx + boardWidth, (idx + boardWidth) + 1]
-    // in last column
-      }else if((idx + 1) % boardWidth === 0) {
-        return [(idx - boardWidth) - 1, idx - boardWidth, idx - 1, (idx + boardWidth) - 1, idx + boardWidth]
-    // in first row
-      }else if((idx > 0 && idx < (boardWidth - 1))) {
-        return [idx - 1, idx + 1, (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
-    // in last row
-      }else if((idx > (totalSquares - boardWidth) && idx < (totalSquares - 1))) {
-        return [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1, idx - 1, idx + 1]
-    // not on a border
-      }else {
-        return [(idx - boardWidth) - 1, idx - boardWidth, (idx - boardWidth) + 1,
-                idx - 1, idx + 1,
-                (idx + boardWidth) - 1, idx + boardWidth, (idx + boardWidth) + 1]
-      }   
-    }
-
-// Set mineNumber of squares surrounding placed mine
-  const markSurrounding = (array, mineIdx) => {
-    const surrounding = getSurrounding(mineIdx);
-
-    surrounding.forEach(square => {
-      if(array[square].mineNumber !== 'M') {
-        array[square].mineNumber++;
-      }
-    });
-
-    return array;
-  }
- 
-// Randomly set mines on initial click
-  const placeMines = (clickedIdx) => {
-    let totalMines = mines;
-    let tempArray = [...buttonArray];
-    let minesArray = [];
-    let startSurrounding = getSurrounding(clickedIdx);
-
-    while(totalMines > 0) {
-      let newMine = Math.floor(Math.random() * Math.max(totalSquares));
-      if(newMine !== clickedIdx && !startSurrounding.includes(newMine) && !minesArray.includes(newMine)) {
-        minesArray.push(newMine);
-        tempArray[newMine].isMine = true;
-        tempArray[newMine].mineNumber = 'M';
-        tempArray = markSurrounding(tempArray, newMine);
-        totalMines--;
-      }
-    }
-    setButtonArray([...tempArray]);
-    setFirstClick(false);
-  }
-
-
-// Clear squares around initial click, and then around neighboring squares that have a mineNumber of 0.
-  const clearSquares = (clickedIdx) => {
-    let surrounding = getSurrounding(clickedIdx);
-    let tempArray = [...buttonArray];
-    let squaresToClear = [];
-
-  // If clicked square does not have a mine in surrounding squares, begin process of clearing neighboring squares
-    if(tempArray[clickedIdx].mineNumber === 0) {
-
-      tempArray[clickedIdx].mineNumber = '';
-
-      // Show squares surrounding clicked square
-      surrounding.forEach(squareIdx => {
-        tempArray[squareIdx].show = true
-        // If surrounding squares mineNumber is 0, set mineNumber to empty and push it into the array of
-        // remaining squares to clear      
-        if(tempArray[squareIdx].mineNumber === 0) {
-          tempArray[squareIdx].mineNumber = '';
-          squaresToClear.push(squareIdx);
-        }
-      });
-    }
-  // Otherwise, if mine is present in surrounding squares, only show clicked square
-    tempArray[clickedIdx].show = true;
-
-    // Function for pulling squares out of squaresToClear array one at a time and clearing the neighbors of said square.
-    // If neighbor mineNumber is 0, push to the end of the array. Function finishes when squaresToClear array is emptied,
-    // meaning there are no more connected neighbors with mineNumber === 0,
-    const clearNeighbors = () => {
-      let toClear = Number(squaresToClear.splice(0, 1));
-      let newNeighbors = getSurrounding(toClear);
-
-      newNeighbors.forEach(newSquareIdx => {
-        if(!tempArray[newSquareIdx].show && !tempArray[newSquareIdx].isMine) {
-          tempArray[newSquareIdx].show = true;
-          if(tempArray[newSquareIdx].mineNumber === 0) {
-            tempArray[newSquareIdx].mineNumber = '';
-            squaresToClear.push(newSquareIdx);
-          }
-        }
-      }); 
-    }
-
-    // Initiate clearNeighbors function
-    while(squaresToClear.length > 0) {
-      clearNeighbors();
-    }
-
-    setButtonArray([...tempArray]);
-  }
-
-
 // Handle square click. 
   const handleClick = e => {
     if(!e.target.dataset.clickable || isDisabled) {return}
     const clickedIdx = Number(e.target.dataset.idx);
     const tempArray = [...buttonArray];
 
+// Handle first click of game
     if(firstClick === true) {
-      placeMines(clickedIdx);
+      let preparedBoard = placeMines(clickedIdx, tempArray, mines, boardWidth, totalSquares);
+      setButtonArray([...preparedBoard]);
+      setFirstClick(false);
       const secondsTimer = setInterval(() => {
         setNumSeconds(numSeconds => numSeconds + 1);
       }, 1000);
       setIntervalID(secondsTimer);
     }
+
+// Handle clicking a mine
     if(buttonArray[clickedIdx].isMine) {
       tempArray.forEach(btn => {
         if(btn.isMine) {btn.show = true}
-      })
+      });
 
       setButtonArray([...tempArray]);
       endGame('lose');
     }
 
-    clearSquares(clickedIdx);
+// Handle clicking any other square
+    const clearedBoard = clearSquares(clickedIdx, tempArray, boardWidth, totalSquares);
+    setButtonArray([...clearedBoard]);
   }
 
 
@@ -302,7 +191,7 @@ function App() {
 
 
 // End Game
-  function endGame (result) {
+  function endGame(result) {
     setIntervalID('');
     const timerID = setTimeout(() => {
       setGameOver(result);
