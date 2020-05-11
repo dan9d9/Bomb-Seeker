@@ -4,7 +4,7 @@ import '../App.css';
 
 const HelpMenu = props => {
 	return (
-		<div className='help_container'>
+		<div id='helpMenu' className='help_container'>
 			<div className='help_menu'>
 				<button type="button" className="close_help" aria-label="Close" onClick={props.handleHelpMenu}>
 			      <span>&times;</span>

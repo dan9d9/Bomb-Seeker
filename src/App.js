@@ -157,8 +157,12 @@ function App() {
 
 
 // Handle new game controls
-  const controlNewGame = e => {
+  const openNewGame = () => {
     setShowMenu(showMenu => !showMenu);
+  }
+
+  const controlNewGame = e => {
+    setShowMenu(false);
 
     if(e.target.textContent === 'Beginner') {
       setTotalSquares(0);
@@ -212,6 +216,7 @@ function App() {
       clearInterval(intervalID);
     }
   }, [intervalID]);
+
   
 
   return (
@@ -223,18 +228,18 @@ function App() {
       </header>
       <div className='app_container'>
         <header className='controls'>
-          <div className='details' onClick={controlNewGame}>
-            <p>New Game</p>
+          <div className='new_game_container'>
+            <button onClick={openNewGame} aria-expanded={showMenu} aria-controls='new_game_menu'>New Game</button>
             {showMenu
-              ? <ul>
-                  <li>Beginner</li>
-                  <li>Intermediate</li>
-                  <li>Expert</li>
+              ? <ul id='new_game_menu'>
+                  <li><button onClick={controlNewGame}>Beginner</button></li>
+                  <li><button onClick={controlNewGame}>Intermediate</button></li>
+                  <li><button onClick={controlNewGame}>Expert</button></li>
                 </ul>
               : null
             }
           </div>
-          <p onClick={handleHelpMenu}>How To Play</p>
+          <button onClick={handleHelpMenu} aria-controls='helpMenu' aria-expanded={showHelp}>How To Play</button>
           {showHelp
             ? <HelpMenu handleHelpMenu={handleHelpMenu}/>
             : null
