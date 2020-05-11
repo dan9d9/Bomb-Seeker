@@ -61,7 +61,7 @@
     let startSurrounding = getSurrounding(clickedIdx, boardWidth, totalSquares);
 
     while(totalMines > 0) {
-      let newMine = Math.floor(Math.random() * Math.max(totalSquares));
+      let newMine = Math.floor(Math.random() * totalSquares);
       if(newMine !== clickedIdx && !startSurrounding.includes(newMine) && !minesArray.includes(newMine)) {
         minesArray.push(newMine);
         arr[newMine].isMine = true;
