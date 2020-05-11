@@ -1,5 +1,9 @@
-Work in progress - https://bomb-mopper.netlify.app/ 
-* needs styling
-* if a game is in progress when there is a change in difficulty, the timer resets but starts without waiting for first click
+# A minesweeper clone using React
+Play Here! - https://bomb-seeker.netlify.app/ 
 
-A minesweeper clone using React and React Hooks
+## Future improvements/additions planned
+* Fastest time tracking
+* Improved mobile playability for Intermediate/Expert difficulties
+
+###Contributions
+Bomb icons made by (https://smashicons.com/)[Smashicons] from (https://www.flaticon.com/)[Flaticon]
