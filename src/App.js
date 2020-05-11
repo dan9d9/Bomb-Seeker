@@ -217,9 +217,9 @@ function App() {
   return (
     <>
       <header className='page_header'>
-        <img src={bomb} />
+        <img src={bomb} alt='a bomb with a lit fuse'/>
         <h1>Bomb Seeker</h1>
-        <img src={bomb} />
+        <img src={bomb} alt='a bomb with a lit fuse'/>
       </header>
       <div className='app_container'>
         <header className='controls'>

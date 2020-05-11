@@ -73,52 +73,18 @@
     return arr;
   }
 
-  // Clear squares around initial click, and then around neighboring squares that have a mineNumber of 0.
   const clearSquares = (clickedIdx, arr, boardWidth, totalSquares) => {
     let surrounding = getSurrounding(clickedIdx, boardWidth, totalSquares);
-    let squaresToClear = [];
 
-  // If clicked square does not have a mine in surrounding squares, begin process of clearing neighboring squares
+    // If clicked square does not have a mine in surrounding squares, begin process of clearing neighboring squares
     if(arr[clickedIdx].mineNumber === 0) {
-
       arr[clickedIdx].mineNumber = '';
 
-      // Show squares surrounding clicked square
-      surrounding.forEach(squareIdx => {
-        arr[squareIdx].show = true
-        // If surrounding squares mineNumber is 0, set mineNumber to empty and push it into the array of
-        // remaining squares to clear      
-        if(arr[squareIdx].mineNumber === 0) {
-          arr[squareIdx].mineNumber = '';
-          squaresToClear.push(squareIdx);
-        }
-      });
+      // Find all connected squares with 0 mines and clear them
+      surrounding.forEach(squareIdx => clearSquares(squareIdx, arr, boardWidth, totalSquares));
     }
-  // Otherwise, if mine is present in surrounding squares, only show clicked square
+    // Otherwise, if mine is present in surrounding squares, only show clicked square
     arr[clickedIdx].show = true;
-
-    // Function for pulling squares out of squaresToClear array one at a time and clearing the neighbors of said square.
-    // If neighbor mineNumber is 0, push to the end of the array. Function finishes when squaresToClear array is emptied,
-    // meaning there are no more connected neighbors with mineNumber === 0,
-    const clearNeighbors = () => {
-      let toClear = Number(squaresToClear.splice(0, 1));
-      let newNeighbors = getSurrounding(toClear, boardWidth, totalSquares);
-
-      newNeighbors.forEach(newSquareIdx => {
-        if(!arr[newSquareIdx].show && !arr[newSquareIdx].isMine) {
-          arr[newSquareIdx].show = true;
-          if(arr[newSquareIdx].mineNumber === 0) {
-            arr[newSquareIdx].mineNumber = '';
-            squaresToClear.push(newSquareIdx);
-          }
-        }
-      }); 
-    }
-
-    // Initiate clearNeighbors function
-    while(squaresToClear.length > 0) {
-      clearNeighbors();
-    }
 
     return arr;
   }
