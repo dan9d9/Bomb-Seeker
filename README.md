@@ -6,4 +6,4 @@ Play Here! - [https://bomb-seeker.netlify.app/](https://bomb-seeker.netlify.app/
 * Improved mobile playability for Intermediate/Expert difficulties
 
 ### Contributions
-Bomb icons made by [https://smashicons.com/](Smashicons) from [https://www.flaticon.com/](Flaticon)
+Bomb icons made by [Smashicons](https://smashicons.com/) from [https://www.flaticon.com/](Flaticon)
