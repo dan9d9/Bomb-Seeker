@@ -8,6 +8,22 @@
   box-sizing: border-box;
 }
 
+.page_header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page_header h1 {
+  margin: 1em 0.5em 0;
+  border-bottom: solid 2px black;
+}
+
+.page_header img {
+  max-width: 64px;
+  margin-top: 2em;
+}
+
 .app_container {
   position: relative;
   cursor: default;
@@ -188,13 +204,16 @@ ul li:hover {
 
 .end_game_module {
   position: absolute;
-  width: 70%;
+  width: max-content;
+  max-width: 100%;
+  padding: 1em;
   top: 25%;
   left: 50%;
   transform: translate(-50%, 0);
-  background-color: #0829BF;
+  background-color: #07229D;
   color: white;
   text-align: center;
+  border: solid 2px black;
   border-radius: 3px;
 }
 
@@ -210,6 +229,10 @@ ul li:hover {
 .end_game_module button {
   padding: 0.2em 0.5em;
   margin: 0.7em 0;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 2px;
+  text-align: center;
 }
 
 .end_game_module button:first-child {

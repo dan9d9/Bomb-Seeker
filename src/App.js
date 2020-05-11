@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import bomb from './bomb.png';
 import Button from './components/Button';
 import EndGameModule from './components/EndGameModule';
 import HelpMenu from './components/HelpMenu';
@@ -214,44 +215,51 @@ function App() {
   
 
   return (
-    <div className='app_container'>
-      <header className='controls'>
-        <div className='details' onClick={controlNewGame}>
-          <p>New Game</p>
-          {showMenu
-            ? <ul>
-                <li>Beginner</li>
-                <li>Intermediate</li>
-                <li>Expert</li>
-              </ul>
+    <>
+      <header className='page_header'>
+        <img src={bomb} />
+        <h1>Bomb Seeker</h1>
+        <img src={bomb} />
+      </header>
+      <div className='app_container'>
+        <header className='controls'>
+          <div className='details' onClick={controlNewGame}>
+            <p>New Game</p>
+            {showMenu
+              ? <ul>
+                  <li>Beginner</li>
+                  <li>Intermediate</li>
+                  <li>Expert</li>
+                </ul>
+              : null
+            }
+          </div>
+          <p onClick={handleHelpMenu}>How To Play</p>
+          {showHelp
+            ? <HelpMenu handleHelpMenu={handleHelpMenu}/>
             : null
           }
+        </header>
+        <div className={`grid_container col-${gameDifficulty}`} onClick={handleClick} onContextMenu={handleRightClick}>
+          {
+            buttonArray.map((ele, idx) => {
+            return <div className='btnContainer' key={idx}>
+                    <Button idx={ele.idx} isMine={ele.isMine} isFlag={ele.isFlag} mineNumber={ele.mineNumber} show={ele.show} />
+                   </div>
+            })
+          }
         </div>
-        <p onClick={handleHelpMenu}>How To Play</p>
-        {showHelp
-          ? <HelpMenu handleHelpMenu={handleHelpMenu}/>
-          : null
-        }
-      </header>
-      <div className={`grid_container col-${gameDifficulty}`} onClick={handleClick} onContextMenu={handleRightClick}>
-        {
-          buttonArray.map((ele, idx) => {
-          return <div className='btnContainer' key={idx}>
-                  <Button idx={ele.idx} isMine={ele.isMine} isFlag={ele.isFlag} mineNumber={ele.mineNumber} show={ele.show} />
-                 </div>
-          })
+        <div className='counter_container'>
+          <div className='mine_counter'>{mines}</div>
+          <div className='timer'>{numSeconds}</div>
+        </div>
+        {gameOver
+            ? <EndGameModule result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
+                setNewGame={setNewGame} setIsDisabled={setIsDisabled} />
+            : null
         }
       </div>
-      <div className='counter_container'>
-        <div className='mine_counter'>{mines}</div>
-        <div className='timer'>{numSeconds}</div>
-      </div>
-      {gameOver
-          ? <EndGameModule result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
-              setNewGame={setNewGame} setIsDisabled={setIsDisabled} />
-          : null
-      }
-    </div>
+    </>
   );
 }
 

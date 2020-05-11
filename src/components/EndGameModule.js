@@ -7,9 +7,9 @@ const EndGameModule = props => {
 
 	useEffect(() => {
 		if(props.result === 'win') {
-			setMessage(`You mopped all the bombs in ${props.numSeconds} seconds!`);
+			setMessage(`You found all the bombs in ${props.numSeconds} seconds!`);
 		}else if(props.result === 'lose'){
-			setMessage('In Bomb Mopper, bombs mop YOU!');
+			setMessage('You stepped on a bomb! Next time step around it.');
 		}
 	}, [props.result, props.numSeconds]);
 

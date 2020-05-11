@@ -21,7 +21,7 @@ const HelpMenu = props => {
 					<p>Uncover every tile that isn't a bomb to win.</p>
 					<p>Right-clicking a tile will place a '!' on a tile that you suspect has a bomb underneath. Right-clicking
 					again will remove the '!'.</p>
-					<h2>And if I click on a mine?</h2>
+					<h2>And if I click on a bomb?</h2>
 					<p>You die.</p>
 				</div>
 			</div>
