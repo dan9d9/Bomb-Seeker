@@ -5,6 +5,9 @@ import Button from './components/Button';
 import EndGameModule from './components/EndGameModule';
 import HelpMenu from './components/HelpMenu';
 import { placeMines, clearSquares } from './squaresLogic';
+import { API, graphqlOperation } from 'aws-amplify';
+import { createScores } from './graphql/mutations';
+import { listScoress } from './graphql/queries';
 
 function App() { 
   const [ gameDifficulty, setGameDifficulty ] = useState('Beginner');
@@ -23,6 +26,13 @@ function App() {
   const [ gameOver, setGameOver ] = useState('');
   const [ showMenu, setShowMenu ] = useState(false);
   const [ showHelp, setShowHelp ] = useState(false);
+  const [ highScores, setHighScores ] = useState([]);
+  const [ scoreForm, setScoreForm ] = useState({
+    name: '',
+    country: '',
+    difficulty: '',
+    score: 0
+  });
 
   function setBeginnerBoard() {
     setBoardWidth(9);
@@ -44,6 +54,33 @@ function App() {
     setStartingMines(99);
     setMines(99);
   }
+
+  async function getScores() {
+    try {
+      const scoresData = await API.graphql(graphqlOperation(listScoress));
+      console.log('scores data: ', scoresData);
+      const scores = scoresData.data.listScoress.items
+      setHighScores(scores);
+    } catch (err) { console.log('error fetching scores') }
+  }
+
+  async function addScore() {
+    try {
+      const score = { ...scoreForm }
+      setScoreForm({name: '', score: 0});
+      await API.graphql(graphqlOperation(createScores, {input: score}));
+    } catch (err) {
+      console.log('error creating score:', err);
+    }
+  }
+
+  useEffect(() => {
+    getScores();
+  }, []);
+
+  useEffect(() => {
+    console.log(highScores);
+  }, [highScores]);
 
 
 // Set board on newGame === true. On app load, beginner board is set.
@@ -260,7 +297,7 @@ function App() {
         </div>
         {gameOver
             ? <EndGameModule result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
-                setNewGame={setNewGame} setIsDisabled={setIsDisabled} />
+                setNewGame={setNewGame} setIsDisabled={setIsDisabled} setScoreForm={setScoreForm} addScore={addScore} />
             : null
         }
       </div>

@@ -7,6 +7,7 @@ const EndGameModule = props => {
 
 	useEffect(() => {
 		if(props.result === 'win') {
+			props.setScoreForm({name: 'test', score: props.numSeconds});
 			setMessage(`You found all the bombs in ${props.numSeconds} seconds!`);
 		}else if(props.result === 'lose'){
 			setMessage('You stepped on a bomb! Next time step around it.');
@@ -15,8 +16,8 @@ const EndGameModule = props => {
 
 
 	const handleClick = e => {
-		if(e.target.tagName !== 'BUTTON') {return}
 		if(e.target.textContent === 'Yes') {
+			props.addScore();
 			props.setTotalSquares(0);
 			props.setNewGame(true);	
 			props.setGameOver('');
@@ -32,9 +33,9 @@ const EndGameModule = props => {
 					<p>{message}</p>
 					<p>Play Again?</p>
 				</div>
-				<div onClick={handleClick}>
-					<button>Yes</button>
-					<button>No</button>
+				<div>
+					<button onClick={handleClick}>Yes</button>
+					<button onClick={handleClick}>No</button>
 				</div>
 			</div>
 		</div>

@@ -1,0 +1,5 @@
+type Scores @model {
+  id: ID!
+  name: String!
+  score: Int!
+}
