@@ -59,10 +59,9 @@ ul {
   position: absolute;
   top: 1.5em;
   left: -1.5em;
-  text-align: center;
   list-style-type: none;
   background-color: #EA7C00;
-  padding: 0.5em 1em;
+  padding: 0.5em 1.5em;
   border: solid 2px black;
   border-top: none;
   box-shadow: 1px 2px 4px 1px black;
@@ -74,7 +73,7 @@ ul li {
 }
 
 ul li:not(:last-child) {
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
 ul li:hover {
@@ -82,7 +81,6 @@ ul li:hover {
 }
 
 ul li:hover button {
-  list-style-type: disc;
   text-decoration: underline;
 }
 
@@ -167,6 +165,7 @@ button.close_help {
 }
 
 .button img {
+  width: 100%;
   padding: 0.1em;
   font-weight: bold;
 }
