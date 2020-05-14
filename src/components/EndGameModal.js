@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import '../App.css';
 
-const EndGameModule = props => {
+const EndGameModal = props => {
 	const [ message, setMessage ] = useState();
 
 	useEffect(() => {
 		if(props.result === 'win') {
-			props.setScoreForm({name: 'test', score: props.numSeconds});
+			props.setScoreForm({name: '', score: props.numSeconds, difficulty: props.gameDifficulty, country: ''});
 			setMessage(`You found all the bombs in ${props.numSeconds} seconds!`);
 		}else if(props.result === 'lose'){
 			setMessage('You stepped on a bomb! Next time step around it.');
@@ -22,13 +22,13 @@ const EndGameModule = props => {
 			props.setNewGame(true);	
 			props.setGameOver('');
 		}else {
-			document.querySelector('.module_container').style.display = 'none';
+			document.querySelector('.modal_container').style.display = 'none';
 		}
 	}
 
 	return (
-		<div className='module_container'>
-			<div className='end_game_module'>
+		<div className='modal_container'>
+			<div className='end_game_modal'>
 				<div>
 					<p>{message}</p>
 					<p>Play Again?</p>
@@ -42,9 +42,9 @@ const EndGameModule = props => {
 	);
 }
 
-export default EndGameModule;
+export default EndGameModal;
 
-EndGameModule.propTypes = {
+EndGameModal.propTypes = {
   result: PropTypes.string.isRequired,
   numSeconds: PropTypes.number.isRequired,
   setTotalSquares: PropTypes.func.isRequired,

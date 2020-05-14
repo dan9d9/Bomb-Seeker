@@ -1,5 +1,7 @@
 type Scores @model {
   id: ID!
   name: String!
+  country: String
+  difficulty: String!
   score: Int!
 }

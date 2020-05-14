@@ -6,6 +6,8 @@ export const getScores = /* GraphQL */ `
     getScores(id: $id) {
       id
       name
+      country
+      difficulty
       score
     }
   }
@@ -20,6 +22,8 @@ export const listScoress = /* GraphQL */ `
       items {
         id
         name
+        country
+        difficulty
         score
       }
       nextToken

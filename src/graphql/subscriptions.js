@@ -6,6 +6,8 @@ export const onCreateScores = /* GraphQL */ `
     onCreateScores {
       id
       name
+      country
+      difficulty
       score
     }
   }
@@ -15,6 +17,8 @@ export const onUpdateScores = /* GraphQL */ `
     onUpdateScores {
       id
       name
+      country
+      difficulty
       score
     }
   }
@@ -24,6 +28,8 @@ export const onDeleteScores = /* GraphQL */ `
     onDeleteScores {
       id
       name
+      country
+      difficulty
       score
     }
   }

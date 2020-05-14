@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import '../App.css';
 
-const HelpMenu = props => {
+const HelpMenuModal = props => {
 	return (
-		<div id='helpMenu' className='help_container'>
+		<div id='helpMenu' className='modal_container help_menu_modal'>
 			<div className='help_menu'>
 				<button type="button" className="close_help" aria-label="Close" onClick={props.handleHelpMenu}>
 			      <span>&times;</span>
@@ -29,8 +29,8 @@ const HelpMenu = props => {
 	);
 }
 
-export default HelpMenu;
+export default HelpMenuModal;
 
-HelpMenu.propTypes = {
+HelpMenuModal.propTypes = {
 	handleHelpMenu: PropTypes.func.isRequired,
 }

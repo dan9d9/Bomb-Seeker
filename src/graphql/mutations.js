@@ -9,6 +9,8 @@ export const createScores = /* GraphQL */ `
     createScores(input: $input, condition: $condition) {
       id
       name
+      country
+      difficulty
       score
     }
   }
@@ -21,6 +23,8 @@ export const updateScores = /* GraphQL */ `
     updateScores(input: $input, condition: $condition) {
       id
       name
+      country
+      difficulty
       score
     }
   }
@@ -33,6 +37,8 @@ export const deleteScores = /* GraphQL */ `
     deleteScores(input: $input, condition: $condition) {
       id
       name
+      country
+      difficulty
       score
     }
   }
