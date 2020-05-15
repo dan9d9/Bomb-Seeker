@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-minesweeperclone-dev-161004-authRole",
+            "UnauthRoleArn": "arn:aws:iam::662408346823:role/amplify-minesweeperclone-dev-161004-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::662408346823:role/amplify-minesweeperclone-dev-161004-authRole",
+            "Region": "eu-central-1",
+            "DeploymentBucketName": "amplify-minesweeperclone-dev-161004-deployment",
+            "UnauthRoleName": "amplify-minesweeperclone-dev-161004-unauthRole",
+            "StackName": "amplify-minesweeperclone-dev-161004",
+            "StackId": "arn:aws:cloudformation:eu-central-1:662408346823:stack/amplify-minesweeperclone-dev-161004/475df990-945a-11ea-acbf-02012ecdd3ee",
+            "AmplifyAppId": "d2y2pgaf7xoyc1"
+        }
+    }
+}

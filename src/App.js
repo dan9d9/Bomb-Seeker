@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import bomb from './bomb.png';
 import Button from './components/Button';
-import EndGameModule from './components/EndGameModule';
-import HelpMenu from './components/HelpMenu';
+import EndGameModal from './components/EndGameModal';
+import HighScoresModal from './components/HighScoresModal';
+import HelpMenuModal from './components/HelpMenuModal';
 import { placeMines, clearSquares } from './squaresLogic';
+import { API, graphqlOperation } from 'aws-amplify';
+import { listScoress } from './graphql/queries';
 
 function App() { 
   const [ gameDifficulty, setGameDifficulty ] = useState('Beginner');
@@ -23,6 +26,8 @@ function App() {
   const [ gameOver, setGameOver ] = useState('');
   const [ showMenu, setShowMenu ] = useState(false);
   const [ showHelp, setShowHelp ] = useState(false);
+  const [ highScores, setHighScores ] = useState([]);
+  const [ showHighScores, setShowHighScores ] = useState(false);
 
   function setBeginnerBoard() {
     setBoardWidth(9);
@@ -44,6 +49,18 @@ function App() {
     setStartingMines(99);
     setMines(99);
   }
+
+  async function getScores() {
+    try {
+      const scoresData = await API.graphql(graphqlOperation(listScoress));
+      const scores = scoresData.data.listScoress.items
+      setHighScores(scores);
+    } catch (err) { console.log('error fetching scores') }
+  }
+
+  useEffect(() => {
+    getScores();
+  }, []);
 
 
 // Set board on newGame === true. On app load, beginner board is set.
@@ -93,9 +110,9 @@ function App() {
 
 // Listen for win condition
   useEffect(() => {
-    return totalSquares - uncoveredSquares === startingMines
-      ? endGame('win')
-      : undefined
+    if(totalSquares - uncoveredSquares === startingMines) {
+      endGame('win')
+    }
   }, [uncoveredSquares, startingMines, totalSquares]);
 
 
@@ -157,11 +174,15 @@ function App() {
 
 
 // Handle new game controls
-  const openNewGame = () => {
+  const openMenu = () => {
     setShowMenu(showMenu => !showMenu);
   }
 
-  const controlNewGame = e => {
+  const closeHighScores = () => {
+    setShowHighScores(false);
+  }
+
+  const controlMenu = e => {
     setShowMenu(false);
 
     if(e.target.textContent === 'Beginner') {
@@ -176,10 +197,13 @@ function App() {
       setTotalSquares(0);
       setGameDifficulty('Expert');
       setNewGame(true);
+    }else if(e.target.textContent === 'High Scores') {
+      setShowHighScores(showHighScores => !showHighScores);
     }
   }
 
   const handleHelpMenu = e => {
+    getScores();
     setShowHelp(showHelp => !showHelp);
   }
 
@@ -197,6 +221,7 @@ function App() {
 
 // End Game
   function endGame(result) {
+    getScores();
     setIntervalID('');
     const timerID = setTimeout(() => {
       setGameOver(result);
@@ -229,19 +254,20 @@ function App() {
       <div className='app_container'>
         <header className='controls'>
           <div className='new_game_container'>
-            <button onClick={openNewGame} aria-expanded={showMenu} aria-controls='new_game_menu'>New Game</button>
+            <button onClick={openMenu} aria-expanded={showMenu} aria-controls='new_game_menu'>Menu</button>
             {showMenu
               ? <ul id='new_game_menu'>
-                  <li><button onClick={controlNewGame}>Beginner</button></li>
-                  <li><button onClick={controlNewGame}>Intermediate</button></li>
-                  <li><button onClick={controlNewGame}>Expert</button></li>
+                  <li><button onClick={controlMenu}>Beginner</button></li>
+                  <li><button onClick={controlMenu}>Intermediate</button></li>
+                  <li><button onClick={controlMenu}>Expert</button></li>
+                  <li><button onClick={controlMenu}>High Scores</button></li>
                 </ul>
               : null
             }
           </div>
           <button onClick={handleHelpMenu} aria-controls='helpMenu' aria-expanded={showHelp}>How To Play</button>
           {showHelp
-            ? <HelpMenu handleHelpMenu={handleHelpMenu}/>
+            ? <HelpMenuModal handleHelpMenu={handleHelpMenu}/>
             : null
           }
         </header>
@@ -259,9 +285,13 @@ function App() {
           <div className='timer'>{numSeconds}</div>
         </div>
         {gameOver
-            ? <EndGameModule result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
-                setNewGame={setNewGame} setIsDisabled={setIsDisabled} />
+            ? <EndGameModal result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
+                setNewGame={setNewGame} setIsDisabled={setIsDisabled} getScores={getScores} gameDifficulty={gameDifficulty} />
             : null
+        }
+        {showHighScores
+          ? <HighScoresModal highScores={highScores} closeHighScores={closeHighScores}/>
+          : null
         }
       </div>
     </>
