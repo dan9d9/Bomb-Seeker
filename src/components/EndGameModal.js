@@ -21,7 +21,9 @@ const EndGameModal = props => {
 		}else if(props.result === 'lose'){
 			setMessage('You stepped on a bomb! Next time step around it.');
 		}else if(props.result === 'again') {
-			setMessage('');
+			submittedScore
+			? setMessage('Your score has been submitted!')
+			: setMessage('');
 		}
 	}, [props.result, props.numSeconds, submittedScore]);
 
