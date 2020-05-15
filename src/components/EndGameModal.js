@@ -30,12 +30,12 @@ const EndGameModal = props => {
 
 	const handleClick = e => {
 		if(e.target.textContent === 'Yes') {
-			if(props.result === 'lose') {
+			if(props.result === 'win') {
+				setSubmitTime(true);	
+			}else {
 				props.setTotalSquares(0);
 				props.setNewGame(true);	
 				props.setGameOver('');	
-			}else {
-				setSubmitTime(true);	
 			}	
 		}else {
 			document.querySelector('.modal_container').style.display = 'none';
