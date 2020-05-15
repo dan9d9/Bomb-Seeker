@@ -7,7 +7,6 @@ import HighScoresModal from './components/HighScoresModal';
 import HelpMenuModal from './components/HelpMenuModal';
 import { placeMines, clearSquares } from './squaresLogic';
 import { API, graphqlOperation } from 'aws-amplify';
-import { createScores } from './graphql/mutations';
 import { listScoress } from './graphql/queries';
 
 function App() { 
@@ -28,17 +27,7 @@ function App() {
   const [ showMenu, setShowMenu ] = useState(false);
   const [ showHelp, setShowHelp ] = useState(false);
   const [ highScores, setHighScores ] = useState([]);
-  const [ scoreForm, setScoreForm ] = useState({});
   const [ showHighScores, setShowHighScores ] = useState(false);
-
-  function setDefaultScoreForm() {
-    setScoreForm({
-      name: '',
-      country: '',
-      difficulty: '',
-      score: 0
-    });
-  }
 
   function setBeginnerBoard() {
     setBoardWidth(9);
@@ -69,26 +58,9 @@ function App() {
     } catch (err) { console.log('error fetching scores') }
   }
 
-  async function addScore() {
-    try {
-      const score = { ...scoreForm }
-      setDefaultScoreForm()
-      let newScore = await API.graphql(graphqlOperation(createScores, {input: score}));
-      console.log(newScore);
-      getScores();
-    } catch (err) {
-      console.log('error creating score:', err);
-    }
-  }
-
   useEffect(() => {
     getScores();
-    setDefaultScoreForm();
   }, []);
-
-  useEffect(() => {
-    console.log('highscores: ', highScores);
-  }, [highScores]);
 
 
 // Set board on newGame === true. On app load, beginner board is set.
@@ -138,9 +110,9 @@ function App() {
 
 // Listen for win condition
   useEffect(() => {
-    return totalSquares - uncoveredSquares === startingMines
-      ? endGame('win')
-      : undefined
+    if(totalSquares - uncoveredSquares === startingMines) {
+      endGame('win')
+    }
   }, [uncoveredSquares, startingMines, totalSquares]);
 
 
@@ -314,7 +286,7 @@ function App() {
         </div>
         {gameOver
             ? <EndGameModal result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
-                setNewGame={setNewGame} setIsDisabled={setIsDisabled} setScoreForm={setScoreForm} addScore={addScore} gameDifficulty={gameDifficulty} />
+                setNewGame={setNewGame} setIsDisabled={setIsDisabled} getScores={getScores} gameDifficulty={gameDifficulty} />
             : null
         }
         {showHighScores

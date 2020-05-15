@@ -9,35 +9,35 @@ const HighScoresModal = props => {
 	const [ showScores, setShowScores ] = useState([]);
 
 	useEffect(() => {
-		let tempBeginner = props.highScores.filter(ele => ele.difficulty === 'Beginner').sort((a, b) => a.score > b.score);
-		let tempIntermediate = props.highScores.filter(ele => ele.difficulty === 'Intermediate').sort((a, b) => a.score > b.score);
-		let tempExpert = props.highScores.filter(ele => ele.difficulty === 'Expert').sort((a, b) => a.score > b.score);
+		let tempBeginner = props.highScores.filter(ele => ele.difficulty === 'Beginner');
+		let tempIntermediate = props.highScores.filter(ele => ele.difficulty === 'Intermediate');
+		let tempExpert = props.highScores.filter(ele => ele.difficulty === 'Expert');
 
 		setBeginnerScores([...tempBeginner]);
 		setIntermediateScores([...tempIntermediate]);
 		setExpertScores([...tempExpert]);
-	}, []);
+	}, [props.highScores]);
 
 	useEffect(() => {
-		setShowScores([...beginnerScores]);
+		let tempScores = beginnerScores.sort((a, b) => a.score - b.score);
+		setShowScores([...tempScores]);
 	}, [beginnerScores]);
-
-	useEffect(() => {
-		console.log(showScores);
-	}, [showScores]);
 
 	const handleClick = e => {
 		const buttons = document.querySelectorAll('.high_score_buttons button');
 		buttons.forEach(btn => btn.dataset.clicked = 'false');
 		e.target.dataset.clicked = true;
 
+		let tempScores;
 		if(e.target.textContent === 'Beginner') {
-			setShowScores([...beginnerScores]);
+			tempScores = beginnerScores.sort((a, b) => a.score - b.score);
 		}else if(e.target.textContent === 'Intermediate') {
-			setShowScores([...intermediateScores]);
+			tempScores = intermediateScores.sort((a, b) => a.score - b.score);
 		}else if(e.target.textContent === 'Expert') {
-			setShowScores([...expertScores]);
+			tempScores = expertScores.sort((a, b) => a.score - b.score);
 		}
+
+		setShowScores([...tempScores]);
 	}
 
 	return (
@@ -75,3 +75,8 @@ const HighScoresModal = props => {
 }
 
 export default HighScoresModal;
+
+HighScoresModal.propTypes = {
+  highScores: PropTypes.array.isRequired,
+  closeHighScores: PropTypes.func.isRequired,
+}

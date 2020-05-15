@@ -293,7 +293,7 @@ button.close_help {
   padding: 0.3em 0;
 }
 
-.end_game_modal div:last-child {
+.end_game_modal > div:last-child {
   display: flex;
   justify-content: center;
 }
@@ -309,6 +309,29 @@ button.close_help {
 
 .end_game_modal button:first-child {
   margin-right: 5em;
+}
+
+.end_game_modal h2 {
+  margin-bottom: 0.5em;
+}
+
+.end_game_modal form > div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+
+.end_game_modal form div:last-child {
+  display: flex;
+  justify-content: center;
+}
+
+.end_game_modal form label {
+  margin-right: 0.5em;
+}
+
+.end_game_modal form button {
+  margin-bottom: 0;
 }
 
 @media all and (max-width: 840px) {  
