@@ -143,6 +143,8 @@ function App() {
     let tempArray = [...buttonArray];
     let tempMines = mines;
 
+    if(tempArray[clickedIdx].show === true) {return}
+
     if(!tempArray[clickedIdx].isFlag) {
       if(tempMines > 0) {
         tempArray[clickedIdx].isFlag = true;
