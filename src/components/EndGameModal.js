@@ -15,17 +15,23 @@ const EndGameModal = props => {
 	  	score: props.numSeconds
   	});
 
+  	const messages = {
+		win: `You found all the bombs in ${props.numSeconds} seconds!`,
+		lose: 'You stepped on a bomb! Next time step around it.',
+		submitted: 'Your score has been submitted!'
+	}
+
 	useEffect(() => {
 		if(props.result === 'win') {
-			setMessage(`You found all the bombs in ${props.numSeconds} seconds!`);
+			setMessage(messages.win);
 		}else if(props.result === 'lose'){
-			setMessage('You stepped on a bomb! Next time step around it.');
+			setMessage(messages.lose);
 		}else if(props.result === 'again') {
 			submittedScore
-			? setMessage('Your score has been submitted!')
-			: setMessage('');
+				? setMessage(messages.submitted)
+				: setMessage('');
 		}
-	}, [props.result, props.numSeconds, submittedScore]);
+	}, [props.result, props.numSeconds, submittedScore, messages]);
 
 
 	const handleClick = e => {
@@ -49,7 +55,6 @@ const EndGameModal = props => {
 		      const score = { ...scoreForm }
 		      let newScore = await API.graphql(graphqlOperation(createScores, {input: score}));
 		      setSubmittedScore(newScore.data.createScores.score);
-		      props.getScores();
 		    } catch (err) {
 		      console.log('error creating score:', err);
 		    }

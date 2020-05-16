@@ -6,8 +6,6 @@ import EndGameModal from './components/EndGameModal';
 import HighScoresModal from './components/HighScoresModal';
 import HelpMenuModal from './components/HelpMenuModal';
 import { placeMines, clearSquares } from './squaresLogic';
-import { API, graphqlOperation } from 'aws-amplify';
-import { listScoress } from './graphql/queries';
 
 function App() { 
   const [ gameDifficulty, setGameDifficulty ] = useState('Beginner');
@@ -26,7 +24,6 @@ function App() {
   const [ gameOver, setGameOver ] = useState('');
   const [ showMenu, setShowMenu ] = useState(false);
   const [ showHelp, setShowHelp ] = useState(false);
-  const [ highScores, setHighScores ] = useState([]);
   const [ showHighScores, setShowHighScores ] = useState(false);
 
   function setBeginnerBoard() {
@@ -49,18 +46,6 @@ function App() {
     setStartingMines(99);
     setMines(99);
   }
-
-  async function getScores() {
-    try {
-      const scoresData = await API.graphql(graphqlOperation(listScoress));
-      const scores = scoresData.data.listScoress.items
-      setHighScores(scores);
-    } catch (err) { console.log('error fetching scores') }
-  }
-
-  useEffect(() => {
-    getScores();
-  }, []);
 
 
 // Set board on newGame === true. On app load, beginner board is set.
@@ -203,7 +188,6 @@ function App() {
   }
 
   const handleHelpMenu = e => {
-    getScores();
     setShowHelp(showHelp => !showHelp);
   }
 
@@ -221,7 +205,6 @@ function App() {
 
 // End Game
   function endGame(result) {
-    getScores();
     setIntervalID('');
     const timerID = setTimeout(() => {
       setGameOver(result);
@@ -286,11 +269,11 @@ function App() {
         </div>
         {gameOver
             ? <EndGameModal result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
-                setNewGame={setNewGame} setIsDisabled={setIsDisabled} getScores={getScores} gameDifficulty={gameDifficulty} />
+                setNewGame={setNewGame} setIsDisabled={setIsDisabled} gameDifficulty={gameDifficulty} />
             : null
         }
         {showHighScores
-          ? <HighScoresModal highScores={highScores} closeHighScores={closeHighScores}/>
+          ? <HighScoresModal closeHighScores={closeHighScores}/>
           : null
         }
       </div>
