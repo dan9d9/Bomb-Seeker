@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import bomb from './bomb.png';
-import Button from './components/Button';
+import GameGrid from './components/GameGrid';
 import EndGameModal from './components/EndGameModal';
 import HighScoresModal from './components/HighScoresModal';
 import HelpMenuModal from './components/HelpMenuModal';
@@ -256,15 +256,7 @@ function App() {
             : null
           }
         </header>
-        <div className={`grid_container col-${gameDifficulty}`} onClick={handleClick} onContextMenu={handleRightClick}>
-          {
-            buttonArray.map((ele, idx) => {
-            return <div className='btnContainer' key={idx}>
-                    <Button idx={ele.idx} isMine={ele.isMine} isFlag={ele.isFlag} mineNumber={ele.mineNumber} show={ele.show} />
-                   </div>
-            })
-          }
-        </div>
+        <GameGrid handleClick={handleClick} handleRightClick={handleRightClick} buttonArray={buttonArray} gameDifficulty={gameDifficulty}/>
         <div className='counter_container'>
           <div className='mine_counter'>{mines}</div>
           <div className='timer'>{numSeconds}</div>
