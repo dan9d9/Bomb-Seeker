@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import bomb from './bomb.png';
+import MenuHeader from './components/MenuHeader';
 import GameGrid from './components/GameGrid';
+import Counters from './components/Counters';
 import EndGameModal from './components/EndGameModal';
 import HighScoresModal from './components/HighScoresModal';
-import HelpMenuModal from './components/HelpMenuModal';
 import { placeMines, clearSquares } from './squaresLogic';
 
 function App() { 
@@ -13,7 +14,7 @@ function App() {
   const [ totalSquares, setTotalSquares ] = useState();
   const [ buttonArray, setButtonArray ] = useState([]);
   const [ startingMines, setStartingMines ] = useState();
-  const [ mines, setMines ] = useState();
+  const [ mines, setMines ] = useState(0);
   const [ firstClick, setFirstClick ] = useState(true);
   const [ numSeconds, setNumSeconds ] = useState(0);
   const [ intervalID, setIntervalID ] = useState('');
@@ -236,39 +237,18 @@ function App() {
         <h1>Bomb Seeker</h1>
         <img src={bomb} alt='a bomb with a lit fuse'/>
       </header>
-      <div className='app_container'>
-        <header className='controls'>
-          <div className='new_game_container'>
-            <button onClick={openMenu} aria-expanded={showMenu} aria-controls='new_game_menu'>Menu</button>
-            {showMenu
-              ? <ul id='new_game_menu'>
-                  <li><button onClick={controlMenu}>Beginner</button></li>
-                  <li><button onClick={controlMenu}>Intermediate</button></li>
-                  <li><button onClick={controlMenu}>Expert</button></li>
-                  <li><button onClick={controlMenu}>High Scores</button></li>
-                </ul>
-              : null
-            }
-          </div>
-          <button onClick={handleHelpMenu} aria-controls='helpMenu' aria-expanded={showHelp}>How To Play</button>
-          {showHelp
-            ? <HelpMenuModal handleHelpMenu={handleHelpMenu}/>
-            : null
-          }
-        </header>
+      <div className='game_container'>
+        <MenuHeader
+         openMenu={openMenu} showMenu={showMenu} controlMenu={controlMenu}
+         handleHelpMenu={handleHelpMenu} showHelp={showHelp} />
         <GameGrid handleClick={handleClick} handleRightClick={handleRightClick} buttonArray={buttonArray} gameDifficulty={gameDifficulty}/>
-        <div className='counter_container'>
-          <div className='mine_counter'>{mines}</div>
-          <div className='timer'>{numSeconds}</div>
-        </div>
-        {gameOver
-            ? <EndGameModal result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
-                setNewGame={setNewGame} setIsDisabled={setIsDisabled} gameDifficulty={gameDifficulty} />
-            : null
+        <Counters mines={mines} numSeconds={numSeconds} />
+        {gameOver &&
+          <EndGameModal result={gameOver} setGameOver={setGameOver} numSeconds={numSeconds} setTotalSquares={setTotalSquares} 
+              setNewGame={setNewGame} setIsDisabled={setIsDisabled} gameDifficulty={gameDifficulty} />
         }
-        {showHighScores
-          ? <HighScoresModal closeHighScores={closeHighScores}/>
-          : null
+        {showHighScores &&
+          <HighScoresModal closeHighScores={closeHighScores}/>
         }
       </div>
     </>
