@@ -26,7 +26,9 @@ const HighScoresModal = props => {
 			setExpertScores([...tempExpert]);
 			setShowScores([...tempBeginner]);
 			setIsLoading(false);
-		} catch (err) { console.log('error fetching scores') }
+		} catch (err) { 
+			setIsLoading(false);
+			console.log('error fetching scores', err) }
 	}
 
 	useEffect(() => {
