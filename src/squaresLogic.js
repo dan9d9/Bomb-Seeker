@@ -25,7 +25,7 @@
       }else if(idx % boardWidth === 0) {
         return [topTouching, topRightTouching, rightTouching, bottomTouching, bottomRightTouching]
     // in last column
-      }else if((rightTouching) % boardWidth === 0) {
+      }else if((idx + 1) % boardWidth === 0) {
         return [topLeftTouching, topTouching, leftTouching, bottomLeftTouching, bottomTouching]
     // in first row
       }else if((idx > 0 && idx < (boardWidth - 1))) {
@@ -57,12 +57,11 @@
   // Randomly set mines on initial click
   const placeMines = (clickedIdx, arr, mines, boardWidth, totalSquares) => {
     let totalMines = mines;
-    let minesArray = [];
     let startSurrounding = getSurrounding(clickedIdx, boardWidth, totalSquares);
 
     while(totalMines > 0) {
       let newMine = Math.floor(Math.random() * totalSquares);
-      if(newMine !== clickedIdx && !startSurrounding.includes(newMine) && !minesArray.includes(newMine)) {
+      if(newMine !== clickedIdx && !arr[newMine].isMine && !startSurrounding.includes(newMine)) {
         minesArray.push(newMine);
         arr[newMine].isMine = true;
         arr[newMine].mineNumber = 'M';
