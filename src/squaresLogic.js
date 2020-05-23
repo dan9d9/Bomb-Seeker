@@ -62,7 +62,6 @@
     while(totalMines > 0) {
       let newMine = Math.floor(Math.random() * totalSquares);
       if(newMine !== clickedIdx && !arr[newMine].isMine && !startSurrounding.includes(newMine)) {
-        minesArray.push(newMine);
         arr[newMine].isMine = true;
         arr[newMine].mineNumber = 'M';
         arr = markSurrounding(arr, newMine, boardWidth, totalSquares);
