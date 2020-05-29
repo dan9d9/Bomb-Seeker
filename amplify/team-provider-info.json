@@ -11,5 +11,18 @@
             "StackId": "arn:aws:cloudformation:eu-central-1:662408346823:stack/amplify-minesweeperclone-dev-161004/475df990-945a-11ea-acbf-02012ecdd3ee",
             "AmplifyAppId": "d2y2pgaf7xoyc1"
         }
+    },
+    "lenovo": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-minesweeperclone-lenovo-162817-authRole",
+            "UnauthRoleArn": "arn:aws:iam::662408346823:role/amplify-minesweeperclone-lenovo-162817-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::662408346823:role/amplify-minesweeperclone-lenovo-162817-authRole",
+            "Region": "eu-west-1",
+            "DeploymentBucketName": "amplify-minesweeperclone-lenovo-162817-deployment",
+            "UnauthRoleName": "amplify-minesweeperclone-lenovo-162817-unauthRole",
+            "StackName": "amplify-minesweeperclone-lenovo-162817",
+            "StackId": "arn:aws:cloudformation:eu-west-1:662408346823:stack/amplify-minesweeperclone-lenovo-162817/a48140d0-a1b8-11ea-b893-027d0216890a",
+            "AmplifyAppId": "d2e5fq9r62iumz"
+        }
     }
 }

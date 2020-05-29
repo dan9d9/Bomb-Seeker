@@ -9,6 +9,8 @@ export const onCreateScores = /* GraphQL */ `
       country
       difficulty
       score
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -20,6 +22,8 @@ export const onUpdateScores = /* GraphQL */ `
       country
       difficulty
       score
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -31,6 +35,8 @@ export const onDeleteScores = /* GraphQL */ `
       country
       difficulty
       score
+      createdAt
+      updatedAt
     }
   }
 `;

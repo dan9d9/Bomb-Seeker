@@ -9,6 +9,8 @@ export const getScores = /* GraphQL */ `
       country
       difficulty
       score
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -25,6 +27,8 @@ export const listScoress = /* GraphQL */ `
         country
         difficulty
         score
+        createdAt
+        updatedAt
       }
       nextToken
     }
